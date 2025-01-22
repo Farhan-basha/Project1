@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mental Health Assistant</title>
+</head>
+<body>
+    <h1>Mental Health Chatbot</h1>
+    <div id="chat">
+        <div id="chat-box"></div>
+        <input type="text" id="user-input" placeholder="Type your message...">
+        <button onclick="sendMessage()">Send</button>
+    </div>
+    <h2>Submit Mood Data</h2>
+    <form id="mood-form">
+        <label>Stress Level (1-10):</label>
+        <input type="number" id="stress" min="1" max="10">
+        <label>Mood Score (1-10):</label>
+        <input type="number" id="mood" min="1" max="10">
+        <button type="button" onclick="submitMood()">Submit</button>
+    </form>
+    <a href="/dashboard">View Dashboard</a>
+    <script>
+        function sendMessage() {
+            const message = document.getElementById("user-input").value;
+            fetch('/chatbot', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message })
+            })
+            .then(response => response.json())
+            .then(data => {
+                const chatBox = document.getElementById("chat-box");
+                chatBox.innerHTML += `<p>User: ${message}</p>`;
+                chatBox.innerHTML += `<p>Bot: ${data.reply}</p>`;
+                document.getElementById("user-input").value = '';
+            });
+        }
+
+        function submitMood() {
+            const stress = document.getElementById("stress").value;
+            const mood = document.getElementById("mood").value;
+            fetch('/submit_mood', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ stress, mood })
+            })
+            .then(response => response.json())
+            .then(data => alert(data.message));
+        }
+    </script>
+</body>
+</html>
